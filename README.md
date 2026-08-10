@@ -217,8 +217,15 @@ La cadena de integración ha sido validada extremo a extremo demostrando:
 - [x] Consulta y actualización automática del Dashboard React mediante polling cada 5 segundos.
 - [x] Renderizado de datos actuales y gráficas históricas con Recharts.
 
-### Evidencias visuales
-*Las capturas de pantalla del Dashboard en ejecución y diagramas de circuito serán incorporadas en subsecuentes iteraciones de documentación.*
+### 📸 Evidencia visual — Dashboard de telemetría
+
+El dashboard muestra la ejecución real del MVP con actualización periódica de temperatura, humedad ambiental y lectura analógica de humedad del suelo.
+
+La visualización utiliza escalas independientes para preservar la lectura directa de las variables ambientales (`°C` / `%`) y de la señal instrumental del sensor de suelo (`ADC RAW`).
+
+![GeoEnergy Environmental Monitor — Dashboard de telemetría](docs/images/geoenergy-dashboard-telemetry.png)
+
+**Flujo demostrado:** ESP32 → Wi-Fi / HTTP → FastAPI → MongoDB → React / TypeScript → histórico multiescala.
 
 ---
 
