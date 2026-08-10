@@ -282,9 +282,6 @@ Este proyecto sienta las bases conceptuales para la telemetría distribuida de b
 │   ├── package-lock.json
 │   ├── vite.config.ts
 │   └── README.md
-├── .agents/
-│   └── workflows/
-│       └── geoenergy-environmental-monitor.md
 ├── .gitignore
 └── README.md
 ```

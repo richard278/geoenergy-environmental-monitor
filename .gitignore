@@ -2,6 +2,9 @@
 secrets.h
 config.h
 
+# Local agent workflows
+.agents/
+
 # Python
 backend/.venv/
 **/__pycache__/
