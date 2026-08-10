@@ -227,6 +227,16 @@ La visualización utiliza escalas independientes para preservar la lectura direc
 
 **Flujo demostrado:** ESP32 → Wi-Fi / HTTP → FastAPI → MongoDB → React / TypeScript → histórico multiescala.
 
+### 🔌 Evidencia física — Nodo de adquisición IoT
+
+Prototipo físico utilizado para la adquisición de variables ambientales del MVP. El montaje integra un ESP32 Dev Module, sensor DHT22 para temperatura y humedad del aire y un sensor de humedad de suelo con lectura analógica.
+
+La sonda de suelo se muestra aplicada directamente sobre una muestra física, mientras el ESP32 permanece energizado como nodo Edge del sistema.
+
+![GeoEnergy Environmental Monitor — Prototipo físico del nodo IoT](docs/images/geoenergy-hardware-prototype.jpg)
+
+**Cadena física demostrada:** sensores ambientales → ESP32 → adquisición de datos → telemetría hacia la plataforma software.
+
 ---
 
 ## ⚠️ Limitaciones Conocidas del MVP
