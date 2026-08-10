@@ -1,0 +1,27 @@
+# Firmware secrets
+secrets.h
+config.h
+
+# Python
+backend/.venv/
+**/__pycache__/
+*.py[cod]
+
+# Python environment
+.env
+.env.*
+!.env.example
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
