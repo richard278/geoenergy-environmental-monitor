@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
+  Box,
   Container,
   Typography,
   Grid,
@@ -20,21 +21,21 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-
+import "./App.css";
 
 const App = () => {
-
   interface SensorData {
     temperatura: number;
     humedad_aire: number;
     humedad_suelo: number;
   }
-   // ✅ Declaración correcta de los estados
-   const [data, setData] = useState<SensorData[]>([]); // 🔹 SE DEJA SOLO UNA VEZ
-   const [loading, setLoading] = useState(true);
-   const isMobile = useMediaQuery("(max-width:600px)"); // 📱 Detecta si es móvil
 
-   useEffect(() => {
+  // ✅ Declaración correcta de los estados (Lógica funcional preservada)
+  const [data, setData] = useState<SensorData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const isMobile = useMediaQuery("(max-width:600px)");
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get<SensorData[]>("/api/get-sensor-data");
@@ -50,54 +51,173 @@ const App = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const kpis = [
+    {
+      label: "TEMPERATURA",
+      icon: "🌡",
+      value: data[0]?.temperatura ?? "N/A",
+      unit: "°C",
+      sub: "Ambiente",
+      color: "#fb923c",
+    },
+    {
+      label: "HUMEDAD DEL AIRE",
+      icon: "💧",
+      value: data[0]?.humedad_aire ?? "N/A",
+      unit: "%",
+      sub: "Atmosférica",
+      color: "#22d3ee",
+    },
+    {
+      label: "HUMEDAD DEL SUELO",
+      icon: "🌱",
+      value: data[0]?.humedad_suelo ?? "N/A",
+      unit: "ADC",
+      sub: "Lectura analógica RAW",
+      color: "#34d399",
+    },
+  ];
+
   return (
-    <Container maxWidth="lg" style={{ marginTop: "20px", padding: isMobile ? "10px" : "20px" }}>
-      {/* Título con animación de entrada */}
+    <Container maxWidth={false} disableGutters>
+      {/* 🔹 Header Principal del Dashboard */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.6 }}
       >
-        <Typography
-          variant={isMobile ? "h5" : "h4"}
-          align="center"
-          gutterBottom
-          sx={{ fontWeight: "bold", color: "primary.main" }}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            marginBottom: "18px",
+            borderBottom: "1px solid #263449",
+            paddingBottom: "12px",
+          }}
         >
-          📊 Dashboard de Sensores
-        </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+              marginBottom: "6px",
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                letterSpacing: "1.5px",
+                color: "#38bdf8",
+                textTransform: "uppercase",
+              }}
+            >
+              IOT TELEMETRY
+            </Typography>
+            <Box
+              sx={{
+                px: 1.5,
+                py: 0.4,
+                borderRadius: "20px",
+                bgcolor: "rgba(56, 189, 248, 0.08)",
+                border: "1px solid rgba(56, 189, 248, 0.25)",
+                color: "#38bdf8",
+                fontSize: "0.75rem",
+                fontWeight: 600,
+              }}
+            >
+              MVP IoT
+            </Box>
+          </Box>
+          <Typography
+            variant={isMobile ? "h5" : "h4"}
+            sx={{ fontWeight: 800, color: "#f8fafc", letterSpacing: "-0.5px" }}
+          >
+            GeoEnergy Environmental Monitor
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#94a3b8", marginTop: "4px" }}>
+            Monitoreo ambiental IoT en tiempo real
+          </Typography>
+        </Box>
       </motion.div>
 
       {loading ? (
-      <Grid container justifyContent="center" alignItems="center" style={{ minHeight: "200px" }}>
-        <CircularProgress />
-      </Grid>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          style={{ minHeight: "240px" }}
+        >
+          <CircularProgress sx={{ color: "#38bdf8" }} />
+        </Grid>
       ) : data.length === 0 ? (
-      <Typography variant="h6" align="center" color="error">
-        No hay datos disponibles.
-      </Typography>
+        <Typography variant="h6" align="center" sx={{ color: "#fb923c", marginTop: "40px" }}>
+          No hay datos disponibles.
+        </Typography>
       ) : (
         <>
-          {/* 🔹 Tarjetas de Datos Responsivas con Animación */}
-          <Grid container spacing={2} justifyContent="center">
-            {[
-              { label: "🌡 Temperatura", value: data[0]?.temperatura ?? "N/A", color: "error", bg: "#ffe5e5" },
-              { label: "💧 Humedad del Aire", value: data[0]?.humedad_aire ?? "N/A", color: "primary", bg: "#e0f7fa" },
-              { label: "🌱 Humedad del Suelo", value: data[0]?.humedad_suelo ?? "N/A", color: "success", bg: "#e8f5e9" },
-            ].map((sensor, index) => (
+          {/* 🔹 Tarjetas KPI Técnicas */}
+          <Grid container spacing={2.5} justifyContent="center">
+            {kpis.map((sensor, index) => (
               <Grid item xs={12} sm={4} key={index}>
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.15 }}
                 >
-                  <Card sx={{ bgcolor: sensor.bg, textAlign: "center", padding: "10px" }}>
-                    <CardContent>
-                      <Typography variant="h6" color={sensor.color}>
-                        {sensor.label}
-                      </Typography>
-                      <Typography variant={isMobile ? "h5" : "h4"}>
-                        {sensor.value}
+                  <Card className="kpi-card-surface">
+                    <CardContent sx={{ p: "0 !important" }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "12px",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            color: "#94a3b8",
+                            letterSpacing: "0.5px",
+                          }}
+                        >
+                          {sensor.icon} {sensor.label}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "baseline",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: isMobile ? "2rem" : "2.25rem",
+                            fontWeight: 700,
+                            color: "#f8fafc",
+                            lineHeight: 1.1,
+                          }}
+                        >
+                          {sensor.value}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: "1rem",
+                            fontWeight: 600,
+                            color: sensor.color,
+                            marginLeft: "8px",
+                          }}
+                        >
+                          {sensor.unit}
+                        </Typography>
+                      </Box>
+                      <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>
+                        {sensor.sub}
                       </Typography>
                     </CardContent>
                   </Card>
@@ -106,26 +226,74 @@ const App = () => {
             ))}
           </Grid>
 
-          {/* 🔹 Gráfico con Transiciones */}
+          {/* 🔹 Gráfico Histórico Técnico */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Card sx={{ marginTop: "20px", padding: "20px", boxShadow: 3 }}>
-              <Typography variant="h6" align="center" gutterBottom>
-                📈 Historial de Sensores
-              </Typography>
-              <ResponsiveContainer width="100%" height={isMobile ? 250 : 400}>
-                <LineChart data={data}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="timestamp" tick={{ fill: "gray" }} hide={isMobile} />
-                  <YAxis tick={{ fill: "gray" }} />
-                  <Tooltip contentStyle={{ backgroundColor: "black", borderRadius: "10px" }} />
-                  <Legend />
-                  <Line type="monotone" dataKey="temperatura" stroke="#FF0000" name="Temperatura (°C)" />
-                  <Line type="monotone" dataKey="humedad_aire" stroke="#0000FF" name="Humedad del Aire (%)" />
-                  <Line type="monotone" dataKey="humedad_suelo" stroke="#00FF00" name="Humedad del Suelo" />
+            <Card className="chart-card-surface">
+              <Box sx={{ marginBottom: "12px" }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: "#f8fafc" }}>
+                  📈 Historial de Sensores
+                </Typography>
+                <Typography variant="body2" sx={{ color: "#94a3b8", fontSize: "0.8rem" }}>
+                  Telemetría de lecturas recientes
+                </Typography>
+              </Box>
+              <ResponsiveContainer width="100%" height={isMobile ? 240 : 310}>
+                <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid stroke="#263449" strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="timestamp"
+                    tick={{ fill: "#94a3b8", fontSize: 11 }}
+                    axisLine={{ stroke: "#263449" }}
+                    tickLine={false}
+                    hide={isMobile}
+                  />
+                  <YAxis
+                    tick={{ fill: "#94a3b8", fontSize: 11 }}
+                    axisLine={{ stroke: "#263449" }}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#1e293b",
+                      borderColor: "#263449",
+                      borderRadius: "12px",
+                      color: "#f8fafc",
+                      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.5)",
+                    }}
+                    itemStyle={{ color: "#f8fafc" }}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: "16px", color: "#94a3b8", fontSize: "13px" }} />
+                  <Line
+                    type="monotone"
+                    dataKey="temperatura"
+                    stroke="#fb923c"
+                    strokeWidth={2.5}
+                    name="Temperatura (°C)"
+                    dot={{ r: 3, fill: "#fb923c" }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="humedad_aire"
+                    stroke="#22d3ee"
+                    strokeWidth={2.5}
+                    name="Humedad del Aire (%)"
+                    dot={{ r: 3, fill: "#22d3ee" }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="humedad_suelo"
+                    stroke="#34d399"
+                    strokeWidth={2.5}
+                    name="Humedad del Suelo (ADC)"
+                    dot={{ r: 3, fill: "#34d399" }}
+                    activeDot={{ r: 6 }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </Card>
