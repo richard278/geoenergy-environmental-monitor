@@ -242,7 +242,10 @@ const App = () => {
                 </Typography>
               </Box>
               <ResponsiveContainer width="100%" height={isMobile ? 240 : 310}>
-                <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <LineChart
+                  data={data}
+                  margin={{ top: 10, right: isMobile ? 5 : 15, left: isMobile ? -20 : -5, bottom: 0 }}
+                >
                   <CartesianGrid stroke="#263449" strokeDasharray="3 3" />
                   <XAxis
                     dataKey="timestamp"
@@ -252,9 +255,38 @@ const App = () => {
                     hide={isMobile}
                   />
                   <YAxis
+                    yAxisId="environment"
+                    orientation="left"
+                    domain={[0, 100]}
                     tick={{ fill: "#94a3b8", fontSize: 11 }}
                     axisLine={{ stroke: "#263449" }}
                     tickLine={false}
+                    tickCount={5}
+                    label={{
+                      value: "°C / %",
+                      angle: -90,
+                      position: "insideLeft",
+                      fill: "#94a3b8",
+                      fontSize: 11,
+                      style: { textAnchor: "middle" },
+                    }}
+                  />
+                  <YAxis
+                    yAxisId="soil"
+                    orientation="right"
+                    domain={[0, 4095]}
+                    tick={{ fill: "#94a3b8", fontSize: 11 }}
+                    axisLine={{ stroke: "#263449" }}
+                    tickLine={false}
+                    tickCount={5}
+                    label={{
+                      value: "ADC",
+                      angle: 90,
+                      position: "insideRight",
+                      fill: "#94a3b8",
+                      fontSize: 11,
+                      style: { textAnchor: "middle" },
+                    }}
                   />
                   <Tooltip
                     contentStyle={{
@@ -268,6 +300,7 @@ const App = () => {
                   />
                   <Legend wrapperStyle={{ paddingTop: "16px", color: "#94a3b8", fontSize: "13px" }} />
                   <Line
+                    yAxisId="environment"
                     type="monotone"
                     dataKey="temperatura"
                     stroke="#fb923c"
@@ -277,6 +310,7 @@ const App = () => {
                     activeDot={{ r: 6 }}
                   />
                   <Line
+                    yAxisId="environment"
                     type="monotone"
                     dataKey="humedad_aire"
                     stroke="#22d3ee"
@@ -286,6 +320,7 @@ const App = () => {
                     activeDot={{ r: 6 }}
                   />
                   <Line
+                    yAxisId="soil"
                     type="monotone"
                     dataKey="humedad_suelo"
                     stroke="#34d399"
