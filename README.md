@@ -217,16 +217,6 @@ La cadena de integración ha sido validada extremo a extremo demostrando:
 - [x] Consulta y actualización automática del Dashboard React mediante polling cada 5 segundos.
 - [x] Renderizado de datos actuales y gráficas históricas con Recharts.
 
-### 📸 Evidencia visual — Dashboard de telemetría
-
-El dashboard muestra la ejecución real del MVP con actualización periódica de temperatura, humedad ambiental y lectura analógica de humedad del suelo.
-
-La visualización utiliza escalas independientes para preservar la lectura directa de las variables ambientales (`°C` / `%`) y de la señal instrumental del sensor de suelo (`ADC RAW`).
-
-![GeoEnergy Environmental Monitor — Dashboard de telemetría](docs/images/geoenergy-dashboard-telemetry.png)
-
-**Flujo demostrado:** ESP32 → Wi-Fi / HTTP → FastAPI → MongoDB → React / TypeScript → histórico multiescala.
-
 ### 🔌 Evidencia física — Nodo de adquisición IoT
 
 Prototipo físico utilizado para la adquisición de variables ambientales del MVP. El montaje integra un ESP32 Dev Module, sensor DHT22 para temperatura y humedad del aire y un sensor de humedad de suelo con lectura analógica.
@@ -236,6 +226,24 @@ La sonda de suelo se muestra aplicada directamente sobre una muestra física, mi
 ![GeoEnergy Environmental Monitor — Prototipo físico del nodo IoT](docs/images/geoenergy-hardware-prototype.jpg)
 
 **Cadena física demostrada:** sensores ambientales → ESP32 → adquisición de datos → telemetría hacia la plataforma software.
+
+### 🔗 Evidencia API — FastAPI / telemetría persistida
+
+La capa FastAPI expone el histórico reciente mediante `GET /get-sensor-data`. La evidencia muestra una respuesta HTTP `200 OK` y un payload JSON con lecturas persistidas de temperatura, humedad ambiental, señal ADC de suelo y timestamp.
+
+![GeoEnergy Environmental Monitor — FastAPI telemetry response](docs/images/geoenergy-fastapi-telemetry-response.png)
+
+**Contrato demostrado:** MongoDB → FastAPI `GET /get-sensor-data` → HTTP `200 OK` → payload JSON consumible por el frontend.
+
+### 📸 Evidencia visual — Dashboard de telemetría
+
+El dashboard muestra la ejecución real del MVP con actualización periódica de temperatura, humedad ambiental y lectura analógica de humedad del suelo.
+
+La visualización utiliza escalas independientes para preservar la lectura directa de las variables ambientales (`°C` / `%`) y de la señal instrumental del sensor de suelo (`ADC RAW`).
+
+![GeoEnergy Environmental Monitor — Dashboard de telemetría](docs/images/geoenergy-dashboard-telemetry.png)
+
+**Flujo demostrado:** ESP32 → Wi-Fi / HTTP → FastAPI → MongoDB → React / TypeScript → histórico multiescala.
 
 ---
 
