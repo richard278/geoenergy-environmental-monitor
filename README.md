@@ -1,89 +1,93 @@
 # GeoEnergy Environmental Monitor
 
-**MVP IoT full-stack para telemetría ambiental aplicada a escenarios de energía renovable y contexto geotérmico.**
+**Full-stack IoT MVP for environmental telemetry applied to renewable energy scenarios and geothermal contexts.**
 
-> **Nota sobre el estado del proyecto:** Este repositorio representa un **MVP / Proof of Concept (PoC)** funcional diseñado para demostrar la integración vertical de tecnologías IoT (Hardware, Firmware, Backend y Frontend). No es un sistema industrial SCADA, plataforma OT ni solución production-ready.
-
----
-
-## 📋 Resumen
-
-**GeoEnergy Environmental Monitor** es una plataforma de telemetría ambiental end-to-end que adquiere variables de temperatura, humedad del aire y humedad del suelo mediante microcontroladores ESP32 en campo, transmite las lecturas a través de Wi-Fi hacia una API REST en FastAPI, las persiste en una base de datos NoSQL MongoDB y las visualiza en tiempo real en un Dashboard web interactivo desarrollado con React y TypeScript.
-
-Está concebido como una demostración técnica de portafolio para aplicaciones de monitoreo distribuido e instrumentación en entornos de energía renovable y recursos geotérmicos.
+> **Project status note:** This repository represents a functional **MVP / Proof of Concept (PoC)** designed to demonstrate the vertical integration of IoT technologies across Hardware, Firmware, Backend, and Frontend layers. It is not an industrial SCADA system, OT platform, or production-ready solution.
 
 ---
 
-## 📐 Arquitectura del Sistema
+## 📋 Overview
 
-El siguiente diagrama ilustra la arquitectura de componentes y el flujo de datos desde los sensores físicos en la capa Edge hasta la interfaz del usuario:
+**GeoEnergy Environmental Monitor** is an end-to-end environmental telemetry platform that acquires temperature, air humidity, and soil moisture readings through ESP32-based field sensors, transmits the readings over Wi-Fi to a FastAPI REST API, persists them in a MongoDB NoSQL database, and displays them through an interactive React and TypeScript dashboard with periodic telemetry updates.
+
+It is designed as a technical portfolio demonstration for distributed monitoring and instrumentation concepts applicable to renewable energy and geothermal-resource environments.
+
+---
+
+## 📐 System Architecture
+
+The following diagram illustrates the component architecture and data flow from the physical sensors at the Edge layer to the user interface:
 
 ```mermaid
 flowchart LR
-    subgraph Edge ["Capa Edge (Hardware & Firmware)"]
-        S1["DHT22 (Temp & Hum Aire)"] --> ESP32["ESP32 Dev Kit"]
-        S2["Sensor Suelo (YL-69 / FC-28)"] --> ESP32
+    subgraph Edge ["Edge Layer (Hardware & Firmware)"]
+        S1["DHT22 (Temperature & Air Humidity)"] --> ESP32["ESP32 Dev Kit"]
+        S2["Soil Sensor (YL-69 / FC-28)"] --> ESP32
         ESP32 -- "Wi-Fi 2.4 GHz\nHTTP POST /sensor-data\nJSON" --> API
     end
 
-    subgraph Server ["Capa Servidor (Backend & Persistencia)"]
+    subgraph Server ["Server Layer (Backend & Persistence)"]
         API["FastAPI App\n(Python 3.10)"] -- "Motor Async Driver" --> DB[("MongoDB\n(tech_journey DB)")]
     end
 
-    subgraph Client ["Capa Cliente (Frontend & Dashboard)"]
-        API -- "HTTP GET /get-sensor-data\nJSON (Polling 5s)" --> React["React 19 + TypeScript\nDashboard App"]
-        React -- "Proxy Vite (/api)" --> API
+    subgraph Client ["Client Layer (Frontend & Dashboard)"]
+        API -- "HTTP GET /get-sensor-data\nJSON (5s Polling)" --> React["React 19 + TypeScript\nDashboard App"]
+        React -- "Vite Proxy (/api)" --> API
     end
 ```
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Technology Stack
 
 ### Firmware / Edge
-- **Microcontrolador:** ESP32 Dev Module
-- **Lenguaje / Entorno:** C++ / Arduino Framework
-- **Sensores:** DHT22 (Temperatura y Humedad de Aire), Sensor de Humedad de Suelo Higrómetro analógico/digital
-- **Librerías Clave:** `WiFi.h`, `HTTPClient.h`, `ArduinoJson`, `Adafruit_Sensor`, `DHT`
+
+- **Microcontroller:** ESP32 Dev Module
+- **Language / Environment:** C++ / Arduino Framework
+- **Sensors:** DHT22 (Temperature and Air Humidity), analog/digital soil moisture sensor
+- **Key Libraries:** `WiFi.h`, `HTTPClient.h`, `ArduinoJson`, `Adafruit_Sensor`, `DHT`
 
 ### Backend
-- **Lenguaje:** Python 3.10+
-- **Framework Web:** FastAPI `0.115.8`
-- **Validación / Esquemas:** Pydantic `2.10.6` / Pydantic Settings `2.7.1`
-- **Driver Asíncrono DB:** Motor `3.7.0` (PyMongo `4.11.1`)
-- **Servidor ASGI:** Uvicorn `0.34.0`
-- **Base de Datos:** MongoDB local (`localhost:27017`)
+
+- **Language:** Python 3.10+
+- **Web Framework:** FastAPI `0.115.8`
+- **Validation / Schemas:** Pydantic `2.10.6` / Pydantic Settings `2.7.1`
+- **Async Database Driver:** Motor `3.7.0` (PyMongo `4.11.1`)
+- **ASGI Server:** Uvicorn `0.34.0`
+- **Database:** Local MongoDB (`localhost:27017`)
 
 ### Frontend
-- **Framework UI:** React `19.0.0`
-- **Lenguaje:** TypeScript `5.7.2`
-- **Herramienta de Build:** Vite `6.1.0`
-- **Componentes & Estilos:** Material UI (MUI `6.4.4`) / Emotion
-- **Gráficas:** Recharts `2.15.1`
-- **Animaciones & PWA:** Framer Motion `12.4.2` / Vite PWA `1.0.2`
-- **Cliente HTTP:** Axios `1.7.9`
+
+- **UI Framework:** React `19.0.0`
+- **Language:** TypeScript `5.7.2`
+- **Build Tool:** Vite `6.1.0`
+- **Components & Styling:** Material UI (MUI `6.4.4`) / Emotion
+- **Charts:** Recharts `2.15.1`
+- **Animations & PWA:** Framer Motion `12.4.2` / Vite PWA `1.0.2`
+- **HTTP Client:** Axios `1.7.9`
 
 ---
 
-## 🔌 Hardware y Pinout
+## 🔌 Hardware and Pinout
 
-La integración física de sensores con el microcontrolador ESP32 utiliza las siguientes asignaciones GPIO:
+The physical integration between the sensors and the ESP32 microcontroller uses the following GPIO assignments:
 
-| Sensor / Periférico | Pin del Sensor | Pin GPIO ESP32 | Modo de Entrada | Tipo de Lectura |
+| Sensor / Peripheral | Sensor Pin | ESP32 GPIO Pin | Input Mode | Reading Type |
 | :--- | :--- | :--- | :--- | :--- |
-| **DHT22** | DATA | `GPIO 4` | Digital Input | Temperatura (°C) y Humedad Aire (%) |
-| **Higrómetro Suelo** | AO (Analog Out) | `GPIO 34` | Analog Input (ADC1_CH6) | Lectura ADC bruta (0 - 4095) |
-| **Higrómetro Suelo** | DO (Digital Out) | `GPIO 27` | Digital Input | Flag binario (HIGH = Seco, LOW = Húmedo) |
+| **DHT22** | DATA | `GPIO 4` | Digital Input | Temperature (°C) and Air Humidity (%) |
+| **Soil Moisture Sensor** | AO (Analog Out) | `GPIO 34` | Analog Input (ADC1_CH6) | Raw ADC reading (0 - 4095) |
+| **Soil Moisture Sensor** | DO (Digital Out) | `GPIO 27` | Digital Input | Binary flag (HIGH = Dry, LOW = Wet) |
 
-> **Aclaración sobre Lecturas de Suelo:** En la versión actual del MVP, el valor de `humedad_suelo` se transmite y presenta como una lectura ADC bruta (0 a 4095) sin calibración previa a porcentaje volumétrico.
+> **Soil reading clarification:** In the current MVP, the `humedad_suelo` value is transmitted and displayed as a raw ADC reading from 0 to 4095 and is not calibrated to a volumetric moisture percentage.
 
 ---
 
-## 🔄 Contrato de Datos End-to-End
+## 🔄 End-to-End Data Contract
 
-### 1. Payload de Ingesta (ESP32 ➔ Backend)
-Endpoint: `POST /sensor-data`<br>
-Frecuencia de muestreo: Cada 5000 ms (5 segundos).
+### 1. Ingestion Payload (ESP32 ➔ Backend)
+
+Endpoint: `POST /sensor-data`  
+Sampling interval: Every 5000 ms (5 seconds).
 
 ```json
 {
@@ -94,11 +98,12 @@ Frecuencia de muestreo: Cada 5000 ms (5 segundos).
 }
 ```
 
-*Nota sobre el esquema actual:* El firmware transmite el parámetro `suelo_seco` (0 ó 1); sin embargo, en la versión actual del modelo Pydantic en backend (`SensorData`), este campo es ignorado y no se persiste en base de datos.
+*Current schema note:* The firmware transmits the `suelo_seco` parameter (0 or 1). However, in the current backend Pydantic model (`SensorData`), this field is ignored and is not persisted in the database.
 
-### 2. Consulta de Telemetría (Frontend ➔ Backend)
-Endpoint: `GET /get-sensor-data`<br>
-Respuesta (Últimos 10 registros ordenados descendentemente por `_id`):
+### 2. Telemetry Query (Frontend ➔ Backend)
+
+Endpoint: `GET /get-sensor-data`  
+Response: The latest 10 records ordered by `_id` in descending order.
 
 ```json
 [
@@ -114,167 +119,177 @@ Respuesta (Últimos 10 registros ordenados descendentemente por `_id`):
 
 ---
 
-## 🔑 Seguridad y Configuración de Secretos
+## 🔑 Security and Secrets Configuration
 
-Para evitar la filtración de credenciales Wi-Fi o direcciones IP privadas en el repositorio, la configuración del firmware está desacoplada mediante el uso de cabeceras locales ignoradas por Git.
+To prevent Wi-Fi credentials or private IP addresses from being exposed in the repository, firmware configuration is decoupled through local header files that are ignored by Git.
 
-1. **Plantilla pública:** `firmware/geoenergy_monitor/secrets.example.h` (Versionada en el repositorio con placeholders).
-2. **Archivo privado:** `firmware/geoenergy_monitor/secrets.h` (Excluido explícitamente en `.gitignore`).
+1. **Public template:** `firmware/geoenergy_monitor/secrets.example.h`  
+   Versioned in the repository with placeholder values.
 
-### Pasos de configuración local:
+2. **Private file:** `firmware/geoenergy_monitor/secrets.h`  
+   Explicitly excluded through `.gitignore`.
 
-1. Copiar la plantilla a su versión local:
+### Local Configuration Steps
+
+1. Copy the template to its local version:
+
    ```bash
    cp firmware/geoenergy_monitor/secrets.example.h firmware/geoenergy_monitor/secrets.h
    ```
-2. Completar las constantes en `secrets.h` con las credenciales locales:
+
+2. Populate the constants in `secrets.h` with the local credentials:
+
    ```cpp
    #pragma once
 
-   #define WIFI_SSID "TU_RED_WIFI_2.4GHZ"
-   #define WIFI_PASSWORD "TU_CONTRASEÑA"
-   #define SERVER_URL "http://TU_IP_LOCAL:8000/sensor-data"
+   #define WIFI_SSID "YOUR_WIFI_2.4GHZ"
+   #define WIFI_PASSWORD "YOUR_PASSWORD"
+   #define SERVER_URL "http://YOUR_LOCAL_IP:8000/sensor-data"
    ```
 
 ---
 
-## 🚀 Guía de Ejecución Local
+## 🚀 Local Setup and Execution Guide
 
-### 1. Requisitos Previos
-- Python 3.10 o superior.
-- Node.js 18 o superior y npm.
-- Instancia local de MongoDB en ejecución (`mongodb://localhost:27017`).
-- Arduino IDE con el paquete de placas ESP32 instalado.
+### 1. Prerequisites
+
+- Python 3.10 or later.
+- Node.js 18 or later and npm.
+- A running local MongoDB instance (`mongodb://localhost:27017`).
+- Arduino IDE with the ESP32 board package installed.
 
 ---
 
-### 2. Configuración y Arranque del Backend
+### 2. Backend Setup and Startup
 
-Desde la carpeta `backend/`:
+From the `backend/` directory:
 
 ```bash
-# 1. Navegar al directorio
+# 1. Navigate to the directory
 cd backend
 
-# 2. Crear y activar entorno virtual
+# 2. Create and activate a virtual environment
 python -m venv .venv
-# En Windows (PowerShell):
+
+# On Windows (PowerShell):
 .venv\Scripts\Activate.ps1
-# En Linux/macOS:
+
+# On Linux/macOS:
 source .venv/bin/activate
 
-# 3. Instalar dependencias
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Iniciar servidor Uvicorn
+# 4. Start the Uvicorn server
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-- La API estará disponible en `http://localhost:8000`.
-- La documentación interactiva (Swagger UI) se encuentra en `http://localhost:8000/docs`.
+- The API will be available at `http://localhost:8000`.
+- Interactive API documentation (Swagger UI) is available at `http://localhost:8000/docs`.
 
 ---
 
-### 3. Configuración y Arranque del Frontend
+### 3. Frontend Setup and Startup
 
-Desde la carpeta `frontend/`:
+From the `frontend/` directory:
 
 ```bash
-# 1. Navegar al directorio
+# 1. Navigate to the directory
 cd frontend
 
-# 2. Instalar dependencias congeladas
+# 2. Install locked dependencies
 npm ci
 
-# 3. Iniciar servidor de desarrollo Vite
+# 3. Start the Vite development server
 npm run dev
 ```
 
-- El Dashboard web se abrirá en `http://localhost:5173`.
-- El servidor de desarrollo de Vite está configurado con un proxy en `vite.config.ts` que redirige las peticiones `/api/*` hacia `http://localhost:8000/*`.
+- The web dashboard will open at `http://localhost:5173`.
+- The Vite development server is configured with a proxy in `vite.config.ts` that forwards `/api/*` requests to `http://localhost:8000/*`.
 
 ---
 
-### 4. Compilación y Carga del Firmware (ESP32)
+### 4. Firmware Build and Upload (ESP32)
 
-1. Abrir la carpeta `firmware/geoenergy_monitor` en **Arduino IDE**.
-2. Crear y configurar el archivo `secrets.h` con las credenciales de la red Wi-Fi y la dirección IP LAN de la máquina donde corre el backend FastAPI.
-3. Seleccionar la placa **ESP32 Dev Module** y el puerto COM correspondiente.
-4. Compilar y cargar el sketch.
-5. Abrir el Monitor Serie a **115200 baudios** para verificar la conexión Wi-Fi y las respuestas HTTP `200` del servidor.
+1. Open the `firmware/geoenergy_monitor` directory in **Arduino IDE**.
+2. Create and configure `secrets.h` with the Wi-Fi credentials and the LAN IP address of the machine running the FastAPI backend.
+3. Select the **ESP32 Dev Module** board and the corresponding COM port.
+4. Compile and upload the sketch.
+5. Open the Serial Monitor at **115200 baud** to verify the Wi-Fi connection and HTTP `200` responses from the server.
 
 ---
 
-## ✅ Estado del MVP y Evidencias Funcionales
+## ✅ MVP Status and Functional Evidence
 
-La cadena de integración ha sido validada extremo a extremo demostrando:
-- [x] Lectura de temperatura y humedad ambiental desde el sensor DHT22.
-- [x] Lectura analógica de humedad del suelo desde el sensor de suelo.
-- [x] Conexión automática del ESP32 a la red Wi-Fi 2.4 GHz.
-- [x] Construcción y envío de payloads JSON vía HTTP POST.
-- [x] Procesamiento y respuesta HTTP `200 OK` por parte de FastAPI.
-- [x] Persistencia asíncrona de lecturas en MongoDB.
-- [x] Consulta y actualización automática del Dashboard React mediante polling cada 5 segundos.
-- [x] Renderizado de datos actuales y gráficas históricas con Recharts.
+The integration chain has been validated end-to-end, demonstrating:
 
-### 🔌 Evidencia física — Nodo de adquisición IoT
+- [x] Temperature and air humidity acquisition from the DHT22 sensor.
+- [x] Analog soil moisture acquisition from the soil sensor.
+- [x] Automatic ESP32 connection to a 2.4 GHz Wi-Fi network.
+- [x] JSON payload construction and transmission through HTTP POST.
+- [x] FastAPI processing and HTTP `200 OK` responses.
+- [x] Asynchronous persistence of telemetry readings in MongoDB.
+- [x] Automatic React dashboard updates through polling every 5 seconds.
+- [x] Rendering of current values and historical charts with Recharts.
 
-Prototipo físico utilizado para la adquisición de variables ambientales del MVP. El montaje integra un ESP32 Dev Module, sensor DHT22 para temperatura y humedad del aire y un sensor de humedad de suelo con lectura analógica.
+### 🔌 Physical Evidence — IoT Acquisition Node
 
-La sonda de suelo se muestra aplicada directamente sobre una muestra física, mientras el ESP32 permanece energizado como nodo Edge del sistema.
+Physical prototype used to acquire environmental variables for the MVP. The setup integrates an ESP32 Dev Module, a DHT22 sensor for air temperature and humidity, and a soil moisture sensor providing an analog reading.
 
-![GeoEnergy Environmental Monitor — Prototipo físico del nodo IoT](docs/images/geoenergy-hardware-prototype.jpg)
+The soil probe is shown applied directly to a physical soil sample while the ESP32 remains powered as the Edge node of the system.
 
-**Cadena física demostrada:** sensores ambientales → ESP32 → adquisición de datos → telemetría hacia la plataforma software.
+![GeoEnergy Environmental Monitor — Physical IoT acquisition node prototype](docs/images/geoenergy-hardware-prototype.jpg)
 
-### 🔗 Evidencia API — FastAPI / telemetría persistida
+**Demonstrated physical chain:** environmental sensors → ESP32 → data acquisition → telemetry transmission to the software platform.
 
-La capa FastAPI expone el histórico reciente mediante `GET /get-sensor-data`. La evidencia muestra una respuesta HTTP `200 OK` y un payload JSON con lecturas persistidas de temperatura, humedad ambiental, señal ADC de suelo y timestamp.
+### 🔗 API Evidence — FastAPI / Persisted Telemetry
+
+The FastAPI layer exposes recent telemetry history through `GET /get-sensor-data`. The evidence shows an HTTP `200 OK` response and a JSON payload containing persisted temperature, air humidity, raw soil ADC readings, and timestamps.
 
 ![GeoEnergy Environmental Monitor — FastAPI telemetry response](docs/images/geoenergy-fastapi-telemetry-response.png)
 
-**Contrato demostrado:** MongoDB → FastAPI `GET /get-sensor-data` → HTTP `200 OK` → payload JSON consumible por el frontend.
+**Demonstrated contract:** MongoDB → FastAPI `GET /get-sensor-data` → HTTP `200 OK` → JSON payload consumable by the frontend.
 
-### 📸 Evidencia visual — Dashboard de telemetría
+### 📸 Visual Evidence — Telemetry Dashboard
 
-El dashboard muestra la ejecución real del MVP con actualización periódica de temperatura, humedad ambiental y lectura analógica de humedad del suelo.
+The dashboard shows the MVP running with periodic updates for temperature, air humidity, and analog soil moisture readings.
 
-La visualización utiliza escalas independientes para preservar la lectura directa de las variables ambientales (`°C` / `%`) y de la señal instrumental del sensor de suelo (`ADC RAW`).
+The visualization uses independent scales to preserve direct interpretation of environmental variables (`°C` / `%`) and the raw instrumental soil-sensor signal (`ADC RAW`).
 
-![GeoEnergy Environmental Monitor — Dashboard de telemetría](docs/images/geoenergy-dashboard-telemetry.png)
+![GeoEnergy Environmental Monitor — Telemetry dashboard](docs/images/geoenergy-dashboard-telemetry.png)
 
-**Flujo demostrado:** ESP32 → Wi-Fi / HTTP → FastAPI → MongoDB → React / TypeScript → histórico multiescala.
-
----
-
-## ⚠️ Limitaciones Conocidas del MVP
-
-1. **Lectura de Suelo Bruta:** La humedad de suelo se visualiza como valor ADC bruto (0-4095) y no como porcentaje calibrado.
-2. **Esquema de Modelo:** El backend descarta el campo `suelo_seco` enviado por el microcontrolador.
-3. **Ordenamiento Histórico:** La API devuelve los últimos 10 registros descendentemente, por lo que la gráfica requiere ordenamiento en el cliente para mostrar el histórico en cronología ascendente.
-4. **Entorno de Desarrollo Local:** Configuración de CORS permisiva (`allow_origins=["*"]`) y sin autenticación de endpoints.
+**Demonstrated flow:** ESP32 → Wi-Fi / HTTP → FastAPI → MongoDB → React / TypeScript → multiscale telemetry history.
 
 ---
 
-## 🔮 Roadmap / Trabajo Futuro
+## ⚠️ Known MVP Limitations
 
-- [ ] Calibración del sensor analógico de suelo para mapeo a porcentaje de humedad relativa.
-- [ ] Inclusión del campo `suelo_seco` en el modelo Pydantic del backend.
-- [ ] Ordenamiento cronológico automático en el endpoint de consulta histórica.
-- [ ] Gestión de variables de entorno mediante `.env` tanto en backend como en frontend.
-- [ ] Implementación de protocolo MQTT como alternativa liviana a HTTP REST para telemetría continua.
-- [ ] Migración del proyecto de firmware hacia **PlatformIO** para un entorno de compilación auditable.
-- [ ] Integración de alertas de umbral para escenarios geotérmicos (ej. sobrecalentamiento o secado térmico del suelo).
+1. **Raw Soil Reading:** Soil moisture is displayed as a raw ADC value (0-4095), not as a calibrated percentage.
+2. **Model Schema:** The backend currently discards the `suelo_seco` field transmitted by the microcontroller.
+3. **Historical Ordering:** The API returns the latest 10 records in descending order, so the client must reorder them to display history chronologically.
+4. **Local Development Environment:** CORS is permissive (`allow_origins=["*"]`) and the endpoints currently have no authentication.
 
 ---
 
-## 🌿 Contexto de Aplicación: Energía Renovable y Geotermia
+## 🔮 Roadmap / Future Work
 
-Este proyecto sienta las bases conceptuales para la telemetría distribuida de bajo costo en aplicaciones energéticas y ambientales, como el monitoreo del impacto térmico del suelo en áreas de exploración geotérmica, estaciones meteorológicas para plantas solares o control ambiental en microclimas agrícolas e industriales.
+- [ ] Calibrate the analog soil sensor to map raw ADC readings to a relative soil-moisture percentage.
+- [ ] Add the `suelo_seco` field to the backend Pydantic model.
+- [ ] Implement automatic chronological ordering for historical telemetry queries.
+- [ ] Manage environment variables through `.env` files in both backend and frontend.
+- [ ] Implement MQTT as a lightweight alternative to HTTP REST for continuous telemetry.
+- [ ] Migrate the firmware project to **PlatformIO** for a more auditable build environment.
+- [ ] Integrate threshold-based alerts for geothermal scenarios, such as overheating or thermal soil drying.
 
 ---
 
-## 📁 Estructura del Repositorio
+## 🌿 Application Context: Renewable Energy and Geothermal Systems
+
+This project establishes a conceptual foundation for low-cost distributed telemetry in energy and environmental applications, including soil thermal-impact monitoring in geothermal exploration areas, weather stations for solar plants, and environmental monitoring in agricultural and industrial microclimates.
+
+---
+
+## 📁 Repository Structure
 
 ```text
 .
@@ -313,7 +328,7 @@ Este proyecto sienta las bases conceptuales para la telemetría distribuida de b
 
 ---
 
-## 👤 Autor
+## 👤 Author
 
-**Richard Milian**<br>
-Proyecto de portafolio enfocado en IoT, software full-stack, instrumentación y tecnologías aplicables al sector energético.
+**Richard Milian Rivas**  
+Portfolio project focused on IoT, full-stack software engineering, instrumentation, and technologies applicable to the energy sector.
